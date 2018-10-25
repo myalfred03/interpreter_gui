@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/About.png</file>
+        <file>img/HJ-Editor-Code.PNG</file>
+        <file>img/HJ-Editor-Run.PNG</file>
+        <file>img/icon.png</file>
+        <file>img/New.png</file>
+        <file>img/Open.png</file>
+        <file>img/Redo.png</file>
+        <file>img/Run.png</file>
+        <file>img/Save.png</file>
+        <file>img/Setting.png</file>
+        <file>img/stop.png</file>
+        <file>img/Undo.png</file>
+        <file>img/UNI-Script.png</file>
+        <file>img/comment.png</file>
+        <file>img/copy.png</file>
+        <file>img/cut.png</file>
+        <file>img/format.png</file>
+        <file>img/match.png</file>
+        <file>img/new.png</file>
+        <file>img/open.png</file>
+        <file>img/paste.png</file>
+        <file>img/recovery.png</file>
+        <file>img/revoke.png</file>
+        <file>img/run.png</file>
+        <file>img/save.png</file>
+        <file>img/search.png</file>
+        <file>img/floppy-disk.png</file>
+        <file>img/learning.png</file>
+        <file>img/information.png</file>
+    </qresource>
+</RCC>
