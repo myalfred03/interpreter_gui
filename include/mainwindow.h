@@ -11,6 +11,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread/thread.hpp>
 #include <unistd.h>
+#include <ros/ros.h>
 namespace Ui {
   class MainWindow;
 }

@@ -10,6 +10,7 @@ project(interpreter_gui)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  roslib
 )
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
@@ -25,6 +26,7 @@ catkin_package(
   CATKIN_DEPENDS
   roscpp
   std_msgs
+  roslib
 #  DEPENDS system_lib
 )
 

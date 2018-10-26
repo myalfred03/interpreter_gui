@@ -4,6 +4,7 @@
 #include<QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include <ros/package.h>
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
@@ -66,7 +67,7 @@ void MainWindow::resizeEvent(QResizeEvent *event){
 }
 void MainWindow::initFileData(){
   fileName=tr("Untitled.rrun");
-  filePath=tr("/home/yesser/ros_qtc_plugin/src/interpreter_gui/");
+  filePath=QString::fromUtf8( ros::package::getPath("interpreter_gui").c_str()) + "/Script"; //QDir::homePath()+"/ros_qtc_plugin/src/interpreter_gui/Script";//tr("/home/yesser/ros_qtc_plugin/src/interpreter_gui"); //QCoreApplication::applicationDirPath()
   fileSaved=true;
   isRunning=false;
 }
@@ -77,13 +78,7 @@ void MainWindow::redo(){
   ui->editor->redo();
 }
 void MainWindow::saveFile(){
-  fileName=tr("Untitled.rrun");
-  filePath= QDir::homePath()+"/ros_qtc_plugin/src/interpreter_gui/Script";//tr("/home/yesser/ros_qtc_plugin/src/interpreter_gui"); //QCoreApplication::applicationDirPath()
-  QFileDialog path;
-//  path.setDirectory();QDir::homePath()+"/ros_qtc_plugin/src"
-//  QString savePath = path.getExistingDirectory(this, "Pilih Folder Export",QDir::homePath()+"/ros_qtc_plugin",QFileDialog::ShowDirsOnly)+"/"+fileName;
-  QString savePath = path.getSaveFileName(this,tr("Elija la ruta y nombre del archivo a guardar"),filePath,tr("Rrun File(*.rrun)"));
-//  QString savePath=QFileDialog::getSaveFileName(this,tr("Elija la ruta y nombre del archivo a guardar"),fileName,tr("Rrun File(*.rrun)"));
+  QString savePath=QFileDialog::getSaveFileName(this,tr("Elija la ruta y nombre del archivo a guardar"),filePath,tr("Rrun File(*.rrun)"));
   if(!savePath.isEmpty()){
       QFile out(savePath);
       out.open(QIODevice::WriteOnly|QIODevice::Text);
@@ -139,13 +134,27 @@ void MainWindow::run(){
     output.clear();
     error.clear();
     QString buildPath;
-    QRegularExpression re(tr(".*(?=\\.rrun)|"));
+    QRegularExpression re(tr(".*(?=\\.rrun)"));
     buildPath=re.match(filePath).captured();
-    //qDebug()<<buildPath;
+    qDebug()<<filePath;
 //    process.start("bash", QStringList() << "-c" << QString(tr("g++ ")+filePath+tr(" -o ")+buildPath+tr(";")+buildPath));
 //    process.waitForStarted();
+
     ui->outputText->setFocus();
     ui->actionRun->setIcon(stopIcon);
+
+
+    std::ifstream stream(filePath.toStdString);
+    if(stream.good()){
+      std::string linea;
+      while(!stream.eof()){
+        linea.clear();
+        std::getline(stream, linea);
+        ROS_INFO("Proceso %s",linea.c_str());
+      }
+    }
+
+
     }
 }
 void MainWindow::runFinished(int code){
