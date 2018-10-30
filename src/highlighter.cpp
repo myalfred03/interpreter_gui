@@ -10,10 +10,10 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
     keywordPatterns << "\\bMoveL\\b" << "\\bMoveJ\\b" << "\\bMoveC\\b"
-                        << "\\bMoveAbsJ\\b" << "\\bz\\b" << "\\bint\\b"
-                   << "\\bp \\b" << "\\bv \\b" << "\\btool0\\b"
-            /*
-                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
+                    << "\\bMoveAbsJ\\b" << "\\bz\\b" << "\\bint\\b"
+                    << "\\bp \\b" << "\\bv \\b" << "\\bMoveJ_4\\b"
+                    << "\\bMoveJ_1\\b" << "\\bMoveJ_2\\b" << "\\bMoveJ_3\\b"
+             /*          << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
                     << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
                     << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
                     << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"

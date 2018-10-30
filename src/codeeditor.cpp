@@ -235,11 +235,11 @@ void CodeEditor::keyPressEvent(QKeyEvent *event){
 }
 void CodeEditor::setUpCompleteList(){
   completeList<< "MoveJ" << "MoveL" << "MoveC"
-              << "MoveAbsJ" << "z" << "int"
+              << "MoveAbsJ" << "z" << "MoveJ_1"
               << "p" << "v" << "tool0"
-         /*        << "long" << "namespace" << "operator"
-              << "private" << "protected" << "public"
-              << "short" << "signals" << "signed"
+               << "MoveJ_2" << "MoveJ_3" << "MoveJ_4"
+           /*    << "private" << "protected" << "public"
+               << "short" << "signals" << "signed"
               << "slots" << "static" << "struct"
               << "template" << "typedef" << "typename"
               << "union" << "unsigned" << "virtual"

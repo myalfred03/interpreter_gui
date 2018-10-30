@@ -11,7 +11,10 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread/thread.hpp>
 #include <unistd.h>
+#include <fstream>
+#include <iostream>
 #include <ros/ros.h>
+#include <trajectory_msgs/JointTrajectory.h>
 namespace Ui {
   class MainWindow;
 }
@@ -23,20 +26,30 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
+
+
 private:
   QIcon runIcon;
   QIcon stopIcon;
   Ui::MainWindow *ui;
   Highlighter *highlighter;
+  ros::Publisher joint_pub;
+  ros::NodeHandle nh_;
+
+
 //  QProcess process;
   void setUpHighlighter();
-  //---------记录文件信息----------
   QString fileName;
   QString filePath;
   bool fileSaved;
   bool isRunning;
   //bool fileEdited;
   void initFileData();
+  trajectory_msgs::JointTrajectory comandos(std::string &comando);
+  trajectory_msgs::JointTrajectory msg1, msgolder;
+  std::vector<std::string> split(const std::string &c, char d);
+  void trajectory(const trajectory_msgs::JointTrajectory &msg);
+  std::vector<double> jointvaluesOLD = {0.0,0.0,0.0,0.0,0.0,0.0};
   bool firstLoad;
   //-----------------------------
 
@@ -61,7 +74,6 @@ public slots:
     this->setWindowTitle(tr("Robot Editor Script - ")+fileName+tr("*"));
   }
 
-  //---------工具栏响应函数---------
   void newFile();
   void saveFile();
   void openFile();
@@ -70,7 +82,7 @@ public slots:
   void run();
   //------------------------------
   void runFinished(int code);
-  void updateOutput();
+  void updateOutput(std::string &info);
   void updateError();
   void about();
 public:
