@@ -18,11 +18,14 @@ MainWindow::MainWindow(QWidget *parent) :
   //--------init toolbar------------
   //ui->statusBar->setStyleSheet("QStatusBar{background:rgb(50,50,50);}");
   ui->mainToolBar->setMovable(false);
-  ui->mainToolBar->setStyleSheet("QToolButton:hover {background-color:darkgray} QToolBar {background: rgb(82,82,82);border: none;}");
+  ui->mainToolBar->setStyleSheet("QToolButton:hover {background-color:darkgray} QToolBar {background: rgb(179, 204, 204);border: none;}");
   //--------------------------------
 
   runIcon.addPixmap(QPixmap(":/img/run.png"));
   stopIcon.addPixmap(QPixmap(":/img/stop.png"));
+  errorIcon.addPixmap(QPixmap(":/img/error.png"));
+  RerrorIcon.addPixmap(QPixmap(":/img/error_red.png"));
+
 
   QPalette windowPalette=this->palette();
   windowPalette.setColor(QPalette::Active,QPalette::Window,QColor(82,82,82));
@@ -46,7 +49,17 @@ MainWindow::MainWindow(QWidget *parent) :
   msg1.points[0].positions.resize(6);
   msgolder.points.resize(1);
   msgolder.points[0].positions.resize(6);
-   joint_pub = nh_.advertise<trajectory_msgs::JointTrajectory>("set_joint_trajectory", 10);
+   joint_pub =       nh_.advertise<trajectory_msgs::JointTrajectory>("set_joint_trajectory", 10);
+   joint_sub_limit = nh_.subscribe("/joint_limits",10,&MainWindow::jointsizeCallback, this);
+
+   spinner = boost::shared_ptr<ros::AsyncSpinner>(new ros::AsyncSpinner(1));
+   spinner->start();
+//   boost::thread* publisher_thread_;
+
+//   publisher_thread_ = new boost::thread(boost::bind(&ROSGUI::publishJointStates, this));
+
+
+
 }
 
 MainWindow::~MainWindow()
@@ -95,12 +108,15 @@ void MainWindow::saveFile(){
       filePath=savePath;
       this->setWindowTitle(tr("Robot Script Editor - ")+fileName);
     }
+  ui->actionError_Datos->setIcon(errorIcon);
+
 }
 void MainWindow::newFile(){
   MainWindow *newWindow=new MainWindow();
   QRect newPos=this->geometry();
   newWindow->setGeometry(newPos.x()+10,newPos.y()+10,newPos.width(),newPos.height());
   newWindow->show();
+  ui->actionError_Datos->setIcon(errorIcon);
 }
 void MainWindow::openFile(){
   if(!fileSaved){
@@ -119,6 +135,7 @@ void MainWindow::openFile(){
       filePath=openPath;
       fileSaved=true;
     }
+  ui->actionError_Datos->setIcon(errorIcon);
 }
 void MainWindow::run(){
   trajectory_msgs::JointTrajectory msg;
@@ -152,7 +169,7 @@ void MainWindow::run(){
     std::ifstream stream(filePath.toStdString()); // "/home/yesser/ros_qtc_plugin/src/interpreter_gui/Script/firstScript.rrun"
     if(stream.good()){
       std::string linea;
-      while(!stream.eof()){
+      while(!stream.eof()&&isRunning){
         linea.clear();
         std::getline(stream, linea);
         ROS_INFO("Proceso %s",linea.c_str());
@@ -169,8 +186,21 @@ void MainWindow::run(){
 
 
     }
-
 }
+
+void MainWindow::jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &msglimit) //Valores de los limtes de los joints
+{
+  std::cout<<"DATAOK"<< std::endl;
+
+  limit.data.resize(12);
+
+    limit = *msglimit;
+    for (int i =0; i<12;i++)
+    {
+  std::cout<< limit.data[i]<< std::endl;
+    }
+}
+
 
 trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
 
@@ -186,6 +216,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
               std::cout << "I have it 1 " << partes[1]  <<std::endl;
               this->updateOutput(partes[1]);
               msg1.points[0].positions[0] = std::stod(partes[1]);
+              if(msg1.points[0].positions[0]>limit.data[0] && msg1.points[0].positions[0]<limit.data[6] ){
+                std::cout<< "is ok for now"<< std::endl;
+                }
+              else {
+                msg1.points[0].positions[0] = 0.00;
+                this->updateError();
+                   }
             }
             break;
           case '2':
@@ -193,6 +230,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
               std::cout << "I have it  2 " << partes[1]  <<std::endl;
               this->updateOutput(partes[1]);
               msg1.points[0].positions[1] = std::stod(partes[1]);
+              if(msg1.points[0].positions[1]>limit.data[1] && msg1.points[0].positions[1]<limit.data[7] ){
+                std::cout<< "is ok for now"<< std::endl;
+                }
+              else {
+                msg1.points[0].positions[1] = 0.00;
+                this->updateError();
+                   }
             }
             break;
 
@@ -201,6 +245,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
             std::cout << "I have it  3 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
             msg1.points[0].positions[2] = std::stod(partes[1]);
+            if(msg1.points[0].positions[2]>limit.data[2] && msg1.points[0].positions[2]<limit.data[8] ){
+              std::cout<< "is ok for now"<< std::endl;
+              }
+            else {
+              msg1.points[0].positions[2] = 0.00;
+              this->updateError();
+                 }
           }
           break;
 
@@ -209,6 +260,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
             std::cout << "I have it  4 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
             msg1.points[0].positions[3] = std::stod(partes[1]);
+            if(msg1.points[0].positions[3]>limit.data[3] && msg1.points[0].positions[3]<limit.data[9] ){
+              std::cout<< "is ok for now"<< std::endl;
+              }
+            else {
+              msg1.points[0].positions[3] = 0.00;
+              this->updateError();
+                 }
           }
           break;
 
@@ -217,6 +275,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
             std::cout << "I have it  5 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
             msg1.points[0].positions[4] = std::stod(partes[1]);
+            if(msg1.points[0].positions[4]>limit.data[4] && msg1.points[0].positions[4]<limit.data[10] ){
+              std::cout<< "is ok for now"<< std::endl;
+              }
+            else {
+              msg1.points[0].positions[4] = 0.00;
+              this->updateError();
+                 }
           }
           break;
 
@@ -227,43 +292,7 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando){
 //              robot->mover(partes[1],std::stod(partes[2]));
             }
             break;
-//          case 'e':
-//            //e fichero
-//            //Ejecuta un fichero
-//            {
-//            if( ruta==""){
-//              //Aún no tenemos una ruta. La cogemos del fichero
-//              ROS_INFO("Estas en %s",boost::filesystem::initial_path().string().c_str());
-//              boost::filesystem::path p=boost::filesystem::complete(partes[1]);
-//              ruta=p.parent_path().string();
-//              ROS_INFO("Ruta fija %s",ruta.c_str());
-//              ROS_INFO("Fichero: %s",partes[1].c_str());
-//              /*ROS_INFO("Ruta 1: %s", p.relative_path().string().c_str());
-//              ROS_INFO("Ruta 2: %s", p.parent_path().string().c_str());
-//              ROS_INFO("Ruta 3: %s", p.root_path().string().c_str());/**/
-//            }else{
-//              //Como tenemos una ruta se la añadimos al contenido
-//              partes[1]=ruta+"/"+partes[1];
-//            }/**/
 
-
-//            std::ifstream stream(partes[1]);
-//            if(stream.good()){
-//              std::string linea;
-//              while(!stream.eof()){
-//                linea.clear();
-//                std::getline(stream, linea);
-//                ROS_INFO("Proceso %s",linea.c_str());
-//                Comandos::procesar(linea, robot);
-//              }
-
-//            }else{
-//              ROS_INFO("No se ha podido abrir el fichero %s",partes[1].c_str());
-
-//            }
-//            stream.close();
-//            }
-//            break;
           case 'w':
             //w [union]
             //Espera hasta que la unión halla llegado a su destino. Si no se indica la unión se espera hata terminar todas
@@ -306,6 +335,7 @@ void MainWindow::runFinished(int code){
   isRunning=false;
   qDebug()<<tr("exit code=")<<code;
   ui->statusBar->showMessage(tr("Ready"));
+
 }
 void MainWindow::updateOutput(std::string &info)
 {
@@ -314,10 +344,11 @@ void MainWindow::updateOutput(std::string &info)
   ui->outputText->setPlainText(ui->outputText->toPlainText()+tr("Ejecutando Movimiento ")+output+tr("... \n"));//+tr("\n"));
 }
 void MainWindow::updateError(){
-//  error=QString::fromLocal8Bit(process.readAllStandardError());
+  error=QString("Valores Fuera del espacio de trabajo");
 //  //ui->outputText->setPlainText(output+tr("\n")+error);
-//  ui->outputText->setPlainText(ui->outputText->toPlainText()+error);//+tr("\n"));
-//  process.terminate();
+  ui->outputText->setPlainText(ui->outputText->toPlainText()+error);//+tr("\n"));
+//  ui->actionError_Datos->isEnabled();
+  ui->actionError_Datos->setIcon(RerrorIcon);
   isRunning=false;
 }
 void MainWindow::inputData(QString data){

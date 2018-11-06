@@ -15,6 +15,8 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <trajectory_msgs/JointTrajectory.h>
+#include <std_msgs/Float32MultiArray.h>
+#include <boost/bind.hpp>
 namespace Ui {
   class MainWindow;
 }
@@ -24,17 +26,24 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = 0);
+  MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
+  ros::Publisher joint_pub;
+  ros::Subscriber joint_sub_limit;
+
+  ros::NodeHandle nh_;
+  std_msgs::Float32MultiArray limit ;
+//  void publishJointStates();
 
 private:
   QIcon runIcon;
   QIcon stopIcon;
+  QIcon errorIcon;
+  QIcon RerrorIcon;
   Ui::MainWindow *ui;
   Highlighter *highlighter;
-  ros::Publisher joint_pub;
-  ros::NodeHandle nh_;
+
 
 
 //  QProcess process;
@@ -49,6 +58,12 @@ private:
   trajectory_msgs::JointTrajectory msg1, msgolder;
   std::vector<std::string> split(const std::string &c, char d);
   void trajectory(const trajectory_msgs::JointTrajectory &msg);
+
+  //--------Based on works of Robolegs------------------
+  boost::shared_ptr<ros::AsyncSpinner> spinner;
+  //----------------------------------------------------
+
+
   std::vector<double> jointvaluesOLD = {0.0,0.0,0.0,0.0,0.0,0.0};
   bool firstLoad;
   //-----------------------------
@@ -73,7 +88,7 @@ public slots:
     fileSaved=false;
     this->setWindowTitle(tr("Robot Editor Script - ")+fileName+tr("*"));
   }
-
+  void jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &msglimit);
   void newFile();
   void saveFile();
   void openFile();

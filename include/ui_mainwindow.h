@@ -38,6 +38,7 @@ public:
     QAction *actionSave_File;
     QAction *actionRun;
     QAction *actionSetting;
+    QAction *actionError_Datos;
     QWidget *centralWidget;
     CodeEditor *editor;
     Console *outputText;
@@ -52,7 +53,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(566, 662);
+        MainWindow->resize(620, 662);
         MainWindow->setWindowTitle(QStringLiteral("Robot Script Editor"));
         QIcon icon;
         icon.addFile(QStringLiteral(":/img/UNI-Script.png"), QSize(), QIcon::Normal, QIcon::Off);
@@ -64,7 +65,9 @@ public:
         actionNewFile->setIcon(icon1);
         QFont font;
         font.setFamily(QStringLiteral("Tlwg Mono"));
+        font.setBold(false);
         font.setItalic(false);
+        font.setWeight(50);
         actionNewFile->setFont(font);
         actionOpen = new QAction(MainWindow);
         actionOpen->setObjectName(QStringLiteral("actionOpen"));
@@ -112,11 +115,17 @@ public:
         icon10.addFile(QStringLiteral(":/image/Setting.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionSetting->setIcon(icon10);
         actionSetting->setVisible(false);
+        actionError_Datos = new QAction(MainWindow);
+        actionError_Datos->setObjectName(QStringLiteral("actionError_Datos"));
+        QIcon icon11;
+        icon11.addFile(QStringLiteral(":/img/error.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon11.addFile(QStringLiteral(":/img/error_red.png"), QSize(), QIcon::Active, QIcon::On);
+        actionError_Datos->setIcon(icon11);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         editor = new CodeEditor(centralWidget);
         editor->setObjectName(QStringLiteral("editor"));
-        editor->setGeometry(QRect(10, 0, 600, 700));
+        editor->setGeometry(QRect(10, 0, 610, 700));
         QFont font1;
         font1.setFamily(QStringLiteral("Serif"));
         font1.setPointSize(14);
@@ -128,7 +137,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 566, 19));
+        menuBar->setGeometry(QRect(0, 0, 620, 18));
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
         menuEdit_O = new QMenu(menuBar);
@@ -144,8 +153,10 @@ public:
         QFont font2;
         font2.setFamily(QStringLiteral("Tlwg Mono"));
         mainToolBar->setFont(font2);
-        mainToolBar->setIconSize(QSize(24, 24));
+        mainToolBar->setAutoFillBackground(true);
+        mainToolBar->setIconSize(QSize(18, 18));
         mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        mainToolBar->setFloatable(false);
         MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
 
         menuBar->addAction(menu->menuAction());
@@ -168,6 +179,7 @@ public:
         mainToolBar->addAction(actionRedo);
         mainToolBar->addAction(actionRun);
         mainToolBar->addAction(actionSetting);
+        mainToolBar->addAction(actionError_Datos);
 
         retranslateUi(MainWindow);
 
@@ -186,7 +198,7 @@ public:
         actionOpen->setToolTip(QApplication::translate("MainWindow", "Abrir Archivo Script LVR", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         actionOpen->setShortcut(QApplication::translate("MainWindow", "Ctrl+O", Q_NULLPTR));
-        actionSelectAll->setText(QApplication::translate("MainWindow", "Seleccionar ", Q_NULLPTR));
+        actionSelectAll->setText(QApplication::translate("MainWindow", "Seleccionar", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         actionSelectAll->setToolTip(QApplication::translate("MainWindow", "Seleccionar Todo", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
@@ -216,6 +228,10 @@ public:
         actionSetting->setText(QApplication::translate("MainWindow", "Setting", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         actionSetting->setToolTip(QApplication::translate("MainWindow", "\346\233\264\346\224\271\347\274\226\350\276\221\345\231\250\347\232\204\350\256\276\347\275\256", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
+        actionError_Datos->setText(QApplication::translate("MainWindow", "Error", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+        actionError_Datos->setToolTip(QApplication::translate("MainWindow", "<html><head/><body><p>Este icono se activara si se ingreso un par\303\241metro al robot fuera de su espacio de trabajo.</p><p>Favor Leer la Hoja de Datos del robot a controlar.</p></body></html>", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         menu->setTitle(QApplication::translate("MainWindow", "Archivo", Q_NULLPTR));
         menuEdit_O->setTitle(QApplication::translate("MainWindow", "Editar", Q_NULLPTR));

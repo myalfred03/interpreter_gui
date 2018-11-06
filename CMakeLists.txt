@@ -50,7 +50,7 @@ include_directories(
     ${Qt5Widgets_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
-
+    ${Boost_INCLUDE_DIRS}
 )
 include_directories (${PROJECT_SOURCE_DIR})
 include_directories (${PROJECT_BINARY_DIR})
@@ -94,6 +94,8 @@ target_link_libraries(interpreter_gui
                          Qt5::Widgets
                          Qt5::Core
                          Qt5::Gui
+                         ${Boost_LIBRARIES}
+
  )
 
 add_definitions(-std=c++11

@@ -29,5 +29,7 @@
         <file>img/floppy-disk.png</file>
         <file>img/learning.png</file>
         <file>img/information.png</file>
+        <file>img/error.png</file>
+        <file>img/error_red.png</file>
     </qresource>
 </RCC>
