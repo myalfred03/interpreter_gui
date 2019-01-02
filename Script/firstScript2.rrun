@@ -1,3 +1,5 @@
-MoveL 455 v 5
-MoveJ 44 v 3
-MoveL 32 v 4 tool0
+MoveJ_2 40
+MoveJ_1 60
+MoveJ_2 0
+MoveJ_1 0	
+loop()

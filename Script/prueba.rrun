@@ -1,2 +1,5 @@
-MoveJ_1 -233
-MoveJ_1 -100
+MoveJ_4 -3
+MoveJ_2 20
+MoveJ_3 40
+MoveJ_4 44
+loop()

@@ -17,6 +17,8 @@
 #include <trajectory_msgs/JointTrajectory.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <boost/bind.hpp>
+//#include <moveit/robot_trajectory/robot_trajectory.h>
+
 namespace Ui {
   class MainWindow;
 }
@@ -34,6 +36,8 @@ public:
 
   ros::NodeHandle nh_;
   std_msgs::Float32MultiArray limit ;
+  void runloop();
+
 //  void publishJointStates();
 
 private:
@@ -52,9 +56,16 @@ private:
   QString filePath;
   bool fileSaved;
   bool isRunning;
+  bool isloop;
   //bool fileEdited;
   void initFileData();
-  trajectory_msgs::JointTrajectory comandos(std::string &comando);
+
+  //remember Points[i].positions.resize(x)
+  //moveit_core/robot_trajectory/src/robottrajectory.cpp
+//  moveit_msgs::RobotTrajectory   trajectory;
+
+
+  trajectory_msgs::JointTrajectory comandos(std::string &comando, int &i);
   trajectory_msgs::JointTrajectory msg1, msgolder;
   std::vector<std::string> split(const std::string &c, char d);
   void trajectory(const trajectory_msgs::JointTrajectory &msg);
@@ -63,6 +74,8 @@ private:
   boost::shared_ptr<ros::AsyncSpinner> spinner;
   //----------------------------------------------------
 
+  boost::thread* publisher_thread_;
+  boost::mutex state_pub_mutex_;
 
   std::vector<double> jointvaluesOLD = {0.0,0.0,0.0,0.0,0.0,0.0};
   bool firstLoad;
@@ -95,10 +108,12 @@ public slots:
   void undo();
   void redo();
   void run();
+
   //------------------------------
   void runFinished(int code);
   void updateOutput(std::string &info);
   void updateError();
+  void updateRobot();
   void about();
 public:
   void inputData(QString data);
