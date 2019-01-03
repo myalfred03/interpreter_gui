@@ -6,6 +6,10 @@ interpreter_gui
 A GUI node of ROS to communicate a Script Like standard RAPID of ABB With Gazebo or RVIZ 
 
 ![image](https://github.com/myalfred03/interpreter_gui/blob/master/img/info/Screenshot1.png)
+Modelo de robot Kuka LBR-IIWA
+
+![image](https://github.com/myalfred03/interpreter_gui/blob/master/img/info/Screenshot2.png)
+Modelo de robot ABB IRB2600
 
 ## Requirements :
 - ``Ubuntu 16.04`` 
