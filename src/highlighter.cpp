@@ -9,10 +9,9 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setForeground(QColor(51, 204, 51));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bMoveL\\b" << "\\bMoveJ\\b" << "\\bMoveC\\b"
-                    << "\\bMoveAbsJ\\b" << "\\bz\\b" << "\\bint\\b"
-                    << "\\bp \\b" << "\\bv \\b" << "\\bMoveJ_4\\b"
+    keywordPatterns << "\\bG\\b" << "\\bV\\b" <<"\\bwait()\\b" <<"\\bloop()\\b"
                     << "\\bMoveJ_1\\b" << "\\bMoveJ_2\\b" << "\\bMoveJ_3\\b"
+                    << "\\bMoveJ_4\\b" << "\\bMoveJ_5\\b" << "\\bMoveJ_6\\b"
              /*          << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
                     << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
                     << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
@@ -28,9 +27,23 @@ Highlighter::Highlighter(QTextDocument *parent)
         rule.pattern = QRegularExpression(pattern);
         rule.format = keywordFormat;
         highlightingRules.append(rule);
-//! [0] //! [1]
     }
-//! [1]
+
+
+    HighlightingRule rule2;
+
+    keywordFormat2.setForeground(QColor(255, 51, 153));
+    keywordFormat2.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns2;
+    keywordPatterns2 << "\\bG\\b" << "\\bV\\b" <<"\\bwait()\\b" <<"\\bloop()\\b"
+                                 ;
+
+    foreach (const QString &pattern2, keywordPatterns2) {
+        rule2.pattern = QRegularExpression(pattern2);
+        rule2.format = keywordFormat2;
+        highlightingRules.append(rule2);
+    }
+
 
 //! [2]
     //类 规则

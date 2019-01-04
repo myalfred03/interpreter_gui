@@ -249,6 +249,8 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
   std::vector<double> jointvalues(6);
   trajectory_msgs::JointTrajectoryPoint comandoP;
   comandoP.positions.resize(6);
+  comandoP.velocities.resize(6);
+
 
  //Full Zero (Core Dumped)
 //      for (int j = 0; j < 6; j++) {
@@ -267,10 +269,17 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
         switch(partes[0][6]){
           case '1':
             if(partes.size()>1){
-              std::cout << "I have it 1 " << partes[1]  <<std::endl;
-              this->updateOutput(partes[1]);
+              std::cout << "I have it 1 " << partes[2]  <<std::endl;
+              this->updateOutput(partes[2]);
 
-              comandoP.positions[0] = std::stod(partes[1]);
+              comandoP.positions[0] = std::stod(partes[2]);
+              comandoP.velocities[0] = std::stod(partes[4]);
+              comandoP.velocities[1] = std::stod(partes[4]);
+              comandoP.velocities[2] = std::stod(partes[4]);
+              comandoP.velocities[3] = std::stod(partes[4]);
+              comandoP.velocities[4] = std::stod(partes[4]);
+              comandoP.velocities[5] = std::stod(partes[4]);
+
 
               if(comandoP.positions[0]>limit.data[0] && comandoP.positions[0]<limit.data[6] ){
                 std::cout<< "is ok for now"<< std::endl;
@@ -284,6 +293,7 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
               }
               else {
                 comandoP.positions[0] = 0.00;
+                comandoP.velocities[0] = 0.00;
                 msg1.joint_names.push_back("joint_1");
                 msg1.points.push_back(comandoP);
                 this->updateError();
@@ -292,12 +302,17 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
             break;
           case '2':
             if(partes.size()>1){
-              std::cout << "I have it  2 " << partes[1]  <<std::endl;
-              this->updateOutput(partes[1]);
+              std::cout << "I have it  2 " << partes[2]  <<std::endl;
+              this->updateOutput(partes[2]);
 
-              comandoP.positions[1] = std::stod(partes[1]);
+              comandoP.positions[1] = std::stod(partes[2]);
+              comandoP.velocities[0] = std::stod(partes[4]);
+              comandoP.velocities[1] = std::stod(partes[4]);
+              comandoP.velocities[2] = std::stod(partes[4]);
+              comandoP.velocities[3] = std::stod(partes[4]);
+              comandoP.velocities[4] = std::stod(partes[4]);
+              comandoP.velocities[5] = std::stod(partes[4]);
 
-              msg1.joint_names.push_back("joint_2");
 //              msg1.points[i-1].positions[1]. = std::stod(partes[1]);
 
               if(comandoP.positions[1]>limit.data[1] && comandoP.positions[1]<limit.data[7] ){
@@ -307,10 +322,12 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
                 comandoP.positions[3] = msg1.points[i-1].positions[3];
                 comandoP.positions[4] = msg1.points[i-1].positions[4];
                 comandoP.positions[5] = msg1.points[i-1].positions[5];
+                msg1.joint_names.push_back("joint_2");
                 msg1.points.push_back(comandoP);
               }
               else {
                 comandoP.positions[1] = 0.00;
+                comandoP.velocities[0] = 0.00;
                 msg1.joint_names.push_back("joint_2");
                 msg1.points.push_back(comandoP);
 //                msg1.points[i-1].positions[1] = 0.00;
@@ -324,9 +341,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
             std::cout << "I have it  3 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
 
-            comandoP.positions[2] = std::stod(partes[1]);
-
-            msg1.joint_names.push_back("joint_3");
+            comandoP.positions[2] = std::stod(partes[2]);
+            comandoP.velocities[0] = std::stod(partes[4]);
+            comandoP.velocities[1] = std::stod(partes[4]);
+            comandoP.velocities[2] = std::stod(partes[4]);
+            comandoP.velocities[3] = std::stod(partes[4]);
+            comandoP.velocities[4] = std::stod(partes[4]);
+            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[2]>limit.data[2] && comandoP.positions[2]<limit.data[8] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -335,10 +356,12 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
               comandoP.positions[3] = msg1.points[i-1].positions[3];
               comandoP.positions[4] = msg1.points[i-1].positions[4];
               comandoP.positions[5] = msg1.points[i-1].positions[5];
+              msg1.joint_names.push_back("joint_3");
               msg1.points.push_back(comandoP);
               }
             else {
               comandoP.positions[2] = 0.00;
+              comandoP.velocities[0] = 0.00;
               msg1.joint_names.push_back("joint_3");
               msg1.points.push_back(comandoP);
               this->updateError();
@@ -352,9 +375,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
             this->updateOutput(partes[1]);
 
 
-            comandoP.positions[3] = std::stod(partes[1]);
-
-            msg1.joint_names.push_back("joint_4");
+            comandoP.positions[3] = std::stod(partes[2]);
+            comandoP.velocities[0] = std::stod(partes[4]);
+            comandoP.velocities[1] = std::stod(partes[4]);
+            comandoP.velocities[2] = std::stod(partes[4]);
+            comandoP.velocities[3] = std::stod(partes[4]);
+            comandoP.velocities[4] = std::stod(partes[4]);
+            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[3]>limit.data[3] && comandoP.positions[3]<limit.data[9] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -363,10 +390,12 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
               comandoP.positions[2] = msg1.points[i-1].positions[2];
               comandoP.positions[4] = msg1.points[i-1].positions[4];
               comandoP.positions[5] = msg1.points[i-1].positions[5];
+              msg1.joint_names.push_back("joint_4");
               msg1.points.push_back(comandoP);
               }
             else {
               comandoP.positions[3] = 0.00;
+              comandoP.velocities[0] = 0.00;
               msg1.joint_names.push_back("joint_4");
               msg1.points.push_back(comandoP);
               this->updateError();
@@ -379,9 +408,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
             std::cout << "I have it  5 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
 
-            comandoP.positions[4] = std::stod(partes[1]);
-
-            msg1.joint_names.push_back("joint_5");
+            comandoP.positions[4] = std::stod(partes[2]);
+            comandoP.velocities[0] = std::stod(partes[4]);
+            comandoP.velocities[1] = std::stod(partes[4]);
+            comandoP.velocities[2] = std::stod(partes[4]);
+            comandoP.velocities[3] = std::stod(partes[4]);
+            comandoP.velocities[4] = std::stod(partes[4]);
+            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[4]>limit.data[4] && comandoP.positions[4]<limit.data[10] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -390,10 +423,12 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
               comandoP.positions[2] = msg1.points[i-1].positions[2];
               comandoP.positions[3] = msg1.points[i-1].positions[3];
               comandoP.positions[5] = msg1.points[i-1].positions[5];
+              msg1.joint_names.push_back("joint_5");
               msg1.points.push_back(comandoP);
               }
             else {
               comandoP.positions[4] = 0.00;
+              comandoP.velocities[0] = 0.00;
               msg1.joint_names.push_back("joint_5");
               msg1.points.push_back(comandoP);
               this->updateError();
@@ -406,9 +441,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
             std::cout << "I have it  6 " << partes[1]  <<std::endl;
             this->updateOutput(partes[1]);
 
-            comandoP.positions[5] = std::stod(partes[1]);
-
-            msg1.joint_names.push_back("joint_5");
+            comandoP.positions[5] = std::stod(partes[2]);
+            comandoP.velocities[0] = std::stod(partes[4]);
+            comandoP.velocities[1] = std::stod(partes[4]);
+            comandoP.velocities[2] = std::stod(partes[4]);
+            comandoP.velocities[3] = std::stod(partes[4]);
+            comandoP.velocities[4] = std::stod(partes[4]);
+            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[5]>limit.data[5] && comandoP.positions[5]<limit.data[11] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -417,11 +456,13 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
               comandoP.positions[2] = msg1.points[i-1].positions[2];
               comandoP.positions[3] = msg1.points[i-1].positions[3];
               comandoP.positions[4] = msg1.points[i-1].positions[4];
+              msg1.joint_names.push_back("joint_6");
               msg1.points.push_back(comandoP);
               }
             else {
               comandoP.positions[5] = 0.00;
-              msg1.joint_names.push_back("joint_5");
+              comandoP.velocities[0] = 0.00;
+              msg1.joint_names.push_back("joint_6");
               msg1.points.push_back(comandoP);
               this->updateError();
                  }
@@ -548,7 +589,7 @@ void MainWindow::updateError(){
 void MainWindow::updateRobot(){
   error=QString("Por Favor cargue un modelo de Robot a ROS");
   ui->outputText->setPlainText(ui->outputText->toPlainText()+error);//+tr("\n"));
-  ui->actionError_Datos->setIcon(RerrorIcon);
+  ui->actionError_Datos->setIcon(errorIcon);
   isRunning=false;
 }
 

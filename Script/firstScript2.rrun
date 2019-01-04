@@ -1,5 +1,13 @@
-MoveJ_2 40
-MoveJ_1 60
-MoveJ_2 0
-MoveJ_1 0	
+MoveJ_1 G 104 V 90
+MoveJ_1 G 56 V 30
+MoveJ_2 G 99 V 90
+MoveJ_2 G 55 V 30
+MoveJ_3 G 40 V 90
+MoveJ_3 G 20 V 30
+MoveJ_4 G 50 V 90
+MoveJ_4 G 10 V 30
+MoveJ_5 G 40 V 90
+MoveJ_5 G 20 V 30
+MoveJ_6 G 30 V 90
+MoveJ_6 G 10 V 30
 loop()
