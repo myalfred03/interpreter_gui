@@ -12,12 +12,19 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   roslib
 )
+
+#add_definitions(-DQT_NO_KEYWORDS)
+
+
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)
+
 set(QT_LIBRARIES Qt5::Widgets)
 set(QT_LIBRARIES Qt5::Core)
 set(QT_LIBRARIES Qt5::Gui)
+set(QT_LIBRARIES Qt5::PrintSupport)
 
 
 catkin_package(
@@ -47,7 +54,9 @@ include_directories(
     include
     ${Qt5Core_INCLUDE_DIRS}
     ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5Widgets_INCLUDE_DIRS}     
+    ${Qt5PrintSupport_INCLUDE_DIRS}
+     ${QT_INCLUDES}
     ${catkin_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
@@ -62,6 +71,7 @@ set (MyProject_src
           src/console.cpp
           src/highlighter.cpp
           src/mainwindow.cpp
+	  src/qcustomplot.cpp
     )
 
 set (MyProjectLib_ui
@@ -76,6 +86,7 @@ set (MyProjectLib_hdr
             include/highlighter.h
             include/mainwindow.h
             include/ui_mainwindow.h
+	    include/qcustomplot.h
 
     )
 

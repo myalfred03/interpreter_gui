@@ -34,21 +34,41 @@ MainWindow::MainWindow(QWidget *parent) :
   //--------------------------------
   initFileData();
   this->updateRobot();
-  connect(ui->actionNewFile,SIGNAL(triggered(bool)),this,SLOT(newFile()));
-  connect(ui->actionOpen,SIGNAL(triggered(bool)),this,SLOT(openFile()));
-  connect(ui->actionSave_File,SIGNAL(triggered(bool)),this,SLOT(saveFile()));
-  connect(ui->actionUndo,SIGNAL(triggered(bool)),this,SLOT(undo()));
-  connect(ui->actionRedo,SIGNAL(triggered(bool)),this,SLOT(redo()));
-  connect(ui->editor,SIGNAL(textChanged()),this,SLOT(changeSaveState()));
-  connect(ui->actionRun,SIGNAL(triggered(bool)),this,SLOT(run()));
-//  connect(&process,SIGNAL(finished(int)),this,SLOT(runFinished(int)));
-//  connect(&process,SIGNAL(readyReadStandardOutput()),this,SLOT(updateOutput()));
-//  connect(&process,SIGNAL(readyReadStandardError()),this,SLOT(updateError()));
-  connect(ui->actionAbout,SIGNAL(triggered(bool)),this,SLOT(about()));
+  QObject::connect(this,      SIGNAL(setvaluesSubs()),            this, SLOT(updatevalues()));
+  connect(ui->actionInfoR,    SIGNAL(triggered(bool)),            this, SLOT(updatevalues()));
+  connect(ui->actionNewFile,  SIGNAL(triggered(bool)),            this, SLOT(newFile()));
+  connect(ui->actionOpen,     SIGNAL(triggered(bool)),            this, SLOT(openFile()));
+  connect(ui->actionSave_File,SIGNAL(triggered(bool)),            this, SLOT(saveFile()));
+  connect(ui->actionUndo,     SIGNAL(triggered(bool)),            this, SLOT(undo()));
+  connect(ui->actionRedo,     SIGNAL(triggered(bool)),            this, SLOT(redo()));
+  connect(ui->editor,         SIGNAL(textChanged()),              this, SLOT(changeSaveState()));
+  connect(ui->actionRun,      SIGNAL(triggered(bool)),            this, SLOT(run()));
+  connect(ui->actionAbout,    SIGNAL(triggered(bool)),            this, SLOT(about()));
+
   fileSaved=true;
 //  msg1.points.resize(1);
 //  msg1.points[0].positions.resize(6);
 //  msg1.points[1].positions.resize(6);
+
+    startTime = ros::Time::now();
+    joint_1_plot = 0.0;
+    joint_2_plot = 0.0;
+    joint_3_plot = 0.0;
+    joint_4_plot = 0.0;
+    joint_5_plot = 0.0;
+    joint_6_plot = 0.0;
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateGraph()));
+    timer->start(5);
+
+    this->initializeGraph();
+    connect(ui->graph_canvas, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoved(QMouseEvent*)));
+    connect(ui->graph_canvas, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
+    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(removeAllGraphs()));
+
+    connect(ui->comboBox,      SIGNAL(currentIndexChanged(int)), this, SLOT(on_comboBox_currentIndexChanged(int)));
+
 
   msgolder.points.resize(1);
   msgolder.points[0].positions.resize(6);
@@ -78,6 +98,219 @@ MainWindow::~MainWindow()
     }
   delete ui;
 }
+
+
+void MainWindow::initializeGraph() {
+    //Make legend visible
+    //ui.graph_canvas->legend->setVisible(true);
+    //ui.graph_canvas->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom);
+
+    //Add the graphs
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(0)->setName("Joint_1");
+    QPen blueDotPen;
+    blueDotPen.setColor(QColor(30, 40, 255, 150));
+    blueDotPen.setStyle(Qt::DotLine);
+    blueDotPen.setWidthF(4);
+    ui->graph_canvas->graph(0)->setPen(blueDotPen);
+
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(1)->setName("Joint_2");
+    QPen redDotPen;
+    redDotPen.setColor(Qt::red);
+    redDotPen.setStyle(Qt::DotLine);
+    redDotPen.setWidthF(4);
+    ui->graph_canvas->graph(1)->setPen(redDotPen);
+
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(2)->setName("Joint_3");
+    QPen yellowDotPen;
+    yellowDotPen.setColor(Qt::yellow);
+    yellowDotPen.setStyle(Qt::DotLine);
+    yellowDotPen.setWidthF(4);
+    ui->graph_canvas->graph(2)->setPen(yellowDotPen);
+
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(3)->setName("Joint_4");
+    QPen blackDotPen;
+    blackDotPen.setColor(Qt::black);
+    blackDotPen.setStyle(Qt::DotLine);
+    blackDotPen.setWidthF(4);
+    ui->graph_canvas->graph(3)->setPen(blackDotPen);
+
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(4)->setName("Joint_5");
+    QPen greenDotPen;
+    greenDotPen.setColor(Qt::green);
+    greenDotPen.setStyle(Qt::DotLine);
+    greenDotPen.setWidthF(4);
+    ui->graph_canvas->graph(4)->setPen(greenDotPen);
+
+    ui->graph_canvas->addGraph();
+    ui->graph_canvas->graph(5)->setName("Joint_6");
+    QPen otherDotPen;
+    otherDotPen.setColor(QColor(115,182,209));
+    otherDotPen.setStyle(Qt::DotLine);
+    otherDotPen.setWidthF(4);
+    ui->graph_canvas->graph(5)->setPen(otherDotPen);
+
+    // give the axes some labels:
+    ui->graph_canvas->xAxis->setLabel("Time (s)");
+    ui->graph_canvas->yAxis->setLabel("Joint move (°)");
+    ui->graph_canvas->legend->setVisible(true);
+
+
+    //For user interaction
+    // main_window_ui_->graph_canvas->setInteraction(QCP::iRangeDrag, true);
+    // main_window_ui_->graph_canvas->setInteraction(QCP::iRangeZoom, true);
+    ui->graph_canvas->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                                  QCP::iSelectLegend | QCP::iSelectPlottables);
+
+    connect(ui->graph_canvas, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoved(QMouseEvent*)));
+
+    x_org = 0;
+
+    //Plot the graph
+    ui->graph_canvas->replot();
+}
+
+void MainWindow::mouseMoved(QMouseEvent *event) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(3);
+
+    double x = ui->graph_canvas->xAxis->pixelToCoord(event->x());
+    double y = ui->graph_canvas->yAxis->pixelToCoord(event->y());
+
+    oss << "Graph values: x: " << x << "\ty: " << y ;
+    ui->label_4->setText(QString::fromStdString(oss.str()));
+}
+
+void MainWindow::removeAllGraphs()
+{
+   // main_window_ui_->graph_canvas->clearGraphs();
+   ui->graph_canvas->graph(0)->data()->clear();
+   ui->graph_canvas->graph(1)->data()->clear();
+   ui->graph_canvas->graph(2)->data()->clear();
+   ui->graph_canvas->graph(3)->data()->clear();
+   ui->graph_canvas->graph(4)->data()->clear();
+   ui->graph_canvas->graph(5)->data()->clear();
+
+   ui->graph_canvas->replot();
+}
+
+void MainWindow::updateGraph() {
+    double x_val = (ros::Time::now() - startTime).toSec();
+
+    // double x_org1 = x_org;
+    // if (x_val - x_org1 > 20) {
+    //     main_window_ui_->graph_canvas->graph(0)->removeDataBefore(x_org1 + 1);
+    //     main_window_ui_->graph_canvas->graph(1)->removeDataBefore(x_org1 + 1);
+    //     x_org++;
+    // }
+
+    ui->graph_canvas->graph(0)->addData(x_val, joint_1_plot);//Set Point
+    ui->graph_canvas->graph(1)->addData(x_val, joint_2_plot);//Output
+    ui->graph_canvas->graph(2)->addData(x_val, joint_3_plot);
+    ui->graph_canvas->graph(3)->addData(x_val, joint_4_plot);
+    ui->graph_canvas->graph(4)->addData(x_val, joint_5_plot);
+    ui->graph_canvas->graph(5)->addData(x_val, joint_6_plot);
+    ui->graph_canvas->rescaleAxes();
+    ui->graph_canvas->replot();
+}
+
+void MainWindow::mouseWheel()
+{
+  // if an axis is selected, only allow the direction of that axis to be zoomed
+  // if no axis is selected, both directions may be zoomed
+  
+  if (ui->graph_canvas->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    ui->graph_canvas->axisRect()->setRangeZoom(ui->graph_canvas->xAxis->orientation());
+  else if (ui->graph_canvas->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    ui->graph_canvas->axisRect()->setRangeZoom(ui->graph_canvas->yAxis->orientation());
+  else
+    ui->graph_canvas->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index=0)
+{
+  switch (index){
+   case 0:
+  {
+    ui->graph_canvas->graph(0)->setVisible(true);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(false);
+    ui->graph_canvas->graph(5)->setVisible(false);
+
+   break;
+  }
+   case 1:
+ {
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(true);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(false);
+    ui->graph_canvas->graph(5)->setVisible(false);
+   break;
+ }
+
+    case 2:
+ {
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(true);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(false);
+    ui->graph_canvas->graph(5)->setVisible(false);
+   break;
+ }
+
+    case 3:
+ {
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(true);
+    ui->graph_canvas->graph(4)->setVisible(false);
+    ui->graph_canvas->graph(5)->setVisible(false);
+   break;
+ }
+    case 4:
+ {
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(5)->setVisible(false);
+   break;
+ }
+    case 5:
+ {
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(false);
+    ui->graph_canvas->graph(5)->setVisible(true);
+   break;
+ }
+    case 6:
+ {
+    ui->graph_canvas->graph(0)->setVisible(true);
+    ui->graph_canvas->graph(1)->setVisible(true);
+    ui->graph_canvas->graph(2)->setVisible(true);
+    ui->graph_canvas->graph(3)->setVisible(true);
+    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(5)->setVisible(true);
+   break;
+ }
+  }
+}
+
+
 void MainWindow::setUpHighlighter(){
   QFont font;
   font.setFamily("Courier");
@@ -160,10 +393,18 @@ void MainWindow::run(){
 
   int it=0;
 //       for (int j = 0; j < 6; j++) {
-       msg1.points.clear();
-       msg1.joint_names.clear();
-         msg1.points.resize(1);
-         msg1.points[0].positions.resize(6);
+        msg1.points.clear();
+        msg1.joint_names.clear();
+        msg1.points.resize(1);
+        msg1.points[0].positions.resize(6);
+        msg1.points[0].velocities.resize(6);
+        msg1.points[0].velocities[0] = 70;
+        msg1.points[0].velocities[1] = 70;
+        msg1.points[0].velocities[2] = 70;
+        msg1.points[0].velocities[3] = 70;
+        msg1.points[0].velocities[4] = 70;
+        msg1.points[0].velocities[5] = 70;
+
 //       } //for
 //       joint_pub.publish(msg1) ; //publish nodo
 
@@ -237,15 +478,32 @@ void MainWindow::jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &
 //  limit.data.resize(12);
 
     limit = *msglimit;
-    for (int i =0; i<12;i++)
-    {
-  std::cout<< limit.data[i]<< std::endl;
-    }
+
+    Q_EMIT setvaluesSubs();
+
+
+}
+
+void MainWindow::updatevalues(){
+  std::cout<<"Signal is OK"<< std::endl;
+  std::string info;
+  ui->outputText->clear();
+  info = std::string("Valores en Grados de Cada Joint de el Robot Cargado a ROS \n");
+  this->updateOutput(info);
+  for (int i =0; i<6;i++)
+  {
+    info = std::string(">>  Joint_" + std::to_string(i+1) + "   " + std::to_string(limit.data[i]) + " Grados (°)    " + " +" + std::to_string(limit.data[i+6]) + " Grados (°) ");
+
+    this->updateOutput(info);
+  }
+
+
 }
 
 
 trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int &ii){
   int i =ii;
+  std::string info;
   std::vector<double> jointvalues(6);
   trajectory_msgs::JointTrajectoryPoint comandoP;
   comandoP.positions.resize(6);
@@ -265,21 +523,22 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
   if(partes.size()==0){
     std::cout<< "Line empty"<< std::endl;
 //    msg1.points[0].positions[0] = 0.00;
-      }else{
+      }else if (partes[1] == std::string("G") && partes[3] == std::string("V")){
+        comandoP.velocities[0] = 101 - std::stod(partes[4]);
+        comandoP.velocities[1] = 101 - std::stod(partes[4]);
+        comandoP.velocities[2] = 101 - std::stod(partes[4]);
+        comandoP.velocities[3] = 101 - std::stod(partes[4]);
+        comandoP.velocities[4] = 101 - std::stod(partes[4]);
+        comandoP.velocities[5] = 101 - std::stod(partes[4]);
         switch(partes[0][6]){
           case '1':
             if(partes.size()>1){
               std::cout << "I have it 1 " << partes[2]  <<std::endl;
-              this->updateOutput(partes[2]);
+
+              info =std::string(">>  Ejecutando Moviento del Joint 1  a  " +partes[2] + " Grados (°)");
+              this->updateOutput(info);
 
               comandoP.positions[0] = std::stod(partes[2]);
-              comandoP.velocities[0] = std::stod(partes[4]);
-              comandoP.velocities[1] = std::stod(partes[4]);
-              comandoP.velocities[2] = std::stod(partes[4]);
-              comandoP.velocities[3] = std::stod(partes[4]);
-              comandoP.velocities[4] = std::stod(partes[4]);
-              comandoP.velocities[5] = std::stod(partes[4]);
-
 
               if(comandoP.positions[0]>limit.data[0] && comandoP.positions[0]<limit.data[6] ){
                 std::cout<< "is ok for now"<< std::endl;
@@ -303,15 +562,16 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
           case '2':
             if(partes.size()>1){
               std::cout << "I have it  2 " << partes[2]  <<std::endl;
-              this->updateOutput(partes[2]);
+              info =std::string(">>  Ejecutando Moviento del Joint 2  a  " +partes[2] + " Grados (°)");
+              this->updateOutput(info);
 
               comandoP.positions[1] = std::stod(partes[2]);
-              comandoP.velocities[0] = std::stod(partes[4]);
-              comandoP.velocities[1] = std::stod(partes[4]);
-              comandoP.velocities[2] = std::stod(partes[4]);
-              comandoP.velocities[3] = std::stod(partes[4]);
-              comandoP.velocities[4] = std::stod(partes[4]);
-              comandoP.velocities[5] = std::stod(partes[4]);
+//              comandoP.velocities[0] = std::stod(partes[4]);
+//              comandoP.velocities[1] = std::stod(partes[4]);
+//              comandoP.velocities[2] = std::stod(partes[4]);
+//              comandoP.velocities[3] = std::stod(partes[4]);
+//              comandoP.velocities[4] = std::stod(partes[4]);
+//              comandoP.velocities[5] = std::stod(partes[4]);
 
 //              msg1.points[i-1].positions[1]. = std::stod(partes[1]);
 
@@ -339,15 +599,11 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
         case '3':
           if(partes.size()>1){
             std::cout << "I have it  3 " << partes[1]  <<std::endl;
-            this->updateOutput(partes[1]);
+
+            info =std::string(">>  Ejecutando Moviento del Joint 3  a  " +partes[2] + " Grados (°)");
+            this->updateOutput(info);
 
             comandoP.positions[2] = std::stod(partes[2]);
-            comandoP.velocities[0] = std::stod(partes[4]);
-            comandoP.velocities[1] = std::stod(partes[4]);
-            comandoP.velocities[2] = std::stod(partes[4]);
-            comandoP.velocities[3] = std::stod(partes[4]);
-            comandoP.velocities[4] = std::stod(partes[4]);
-            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[2]>limit.data[2] && comandoP.positions[2]<limit.data[8] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -372,16 +628,11 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
         case '4':
           if(partes.size()>1){
             std::cout << "I have it  4 " << partes[1]  <<std::endl;
-            this->updateOutput(partes[1]);
 
+            info =std::string(">>  Ejecutando Moviento del Joint 4  a  " +partes[2] + " Grados (°)");
+            this->updateOutput(info);
 
             comandoP.positions[3] = std::stod(partes[2]);
-            comandoP.velocities[0] = std::stod(partes[4]);
-            comandoP.velocities[1] = std::stod(partes[4]);
-            comandoP.velocities[2] = std::stod(partes[4]);
-            comandoP.velocities[3] = std::stod(partes[4]);
-            comandoP.velocities[4] = std::stod(partes[4]);
-            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[3]>limit.data[3] && comandoP.positions[3]<limit.data[9] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -406,15 +657,11 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
         case '5':
           if(partes.size()>1){
             std::cout << "I have it  5 " << partes[1]  <<std::endl;
-            this->updateOutput(partes[1]);
+
+            info =std::string(">>  Ejecutando Moviento del Joint 5  a  " +partes[2] + " Grados (°)");
+            this->updateOutput(info);
 
             comandoP.positions[4] = std::stod(partes[2]);
-            comandoP.velocities[0] = std::stod(partes[4]);
-            comandoP.velocities[1] = std::stod(partes[4]);
-            comandoP.velocities[2] = std::stod(partes[4]);
-            comandoP.velocities[3] = std::stod(partes[4]);
-            comandoP.velocities[4] = std::stod(partes[4]);
-            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[4]>limit.data[4] && comandoP.positions[4]<limit.data[10] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -439,15 +686,11 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
         case '6':
           if(partes.size()>1){
             std::cout << "I have it  6 " << partes[1]  <<std::endl;
-            this->updateOutput(partes[1]);
+
+            info =std::string(">>  Ejecutando Moviento del Joint 6  a  " +partes[2] + " Grados (°)");
+            this->updateOutput(info);
 
             comandoP.positions[5] = std::stod(partes[2]);
-            comandoP.velocities[0] = std::stod(partes[4]);
-            comandoP.velocities[1] = std::stod(partes[4]);
-            comandoP.velocities[2] = std::stod(partes[4]);
-            comandoP.velocities[3] = std::stod(partes[4]);
-            comandoP.velocities[4] = std::stod(partes[4]);
-            comandoP.velocities[5] = std::stod(partes[4]);
 
             if(comandoP.positions[5]>limit.data[5] && comandoP.positions[5]<limit.data[11] ){
               std::cout<< "is ok for now"<< std::endl;
@@ -499,18 +742,52 @@ trajectory_msgs::JointTrajectory MainWindow::comandos(std::string &comando, int 
   if(partes.size()==0){
     std::cout<< "Line empty"<< std::endl;
   }else{
+        if(partes[0]== std::string("wait()"))
+        {
+          std::cout<< "I have wait()"<< std::endl;
+//          isloop =true;
+          info =std::string(">>  Instrucción wait() a  " + partes[1] + " ms");
+          this->updateOutput(info);
+          comandoP.velocities[0] = std::stod(partes[1])/20;
+//          comandoP.velocities[1] = std::stod(partes[1]);
+//          comandoP.velocities[2] = std::stod(partes[1]);
+//          comandoP.velocities[3] = std::stod(partes[1]);
+//          comandoP.velocities[4] = std::stod(partes[1]);
+//          comandoP.velocities[5] = std::stod(partes[1]);
+          comandoP.positions[0] = msg1.points[i-1].positions[0];
+          comandoP.positions[1] = msg1.points[i-1].positions[1];
+          comandoP.positions[2] = msg1.points[i-1].positions[2];
+          comandoP.positions[3] = msg1.points[i-1].positions[3];
+          comandoP.positions[4] = msg1.points[i-1].positions[4];
+          comandoP.positions[5] = msg1.points[i-1].positions[5];
+          msg1.joint_names.push_back("wait");
+          msg1.points.push_back(comandoP);
+        }
+        else {
+          std::cout<< "I don't have wait()"<< std::endl;
+             }
+          }
+
+  if(partes.size()==0){
+    std::cout<< "Line empty"<< std::endl;
+  }else{
         if(partes[0]== std::string("loop()"))
         {
           std::cout<< "I have loop()"<< std::endl;
-          //msg1.points[0].positions[7] = 0.00;
           isloop =true;
-          //    this->runloop();
-          this->updateOutput(partes[0]);
+          info =std::string(">>  Ejecutando todos los movimientos con Comportamiento Ciclico \nDesactiva la instrucción loop() para detener");
+          this->updateOutput(info);
+          // trajectory_msgs::JointTrajectory msg;
+          // msg.points.push_back(comandoP);
         }
         else {
           std::cout<< "I don't have loop()"<< std::endl;
              }
           }
+
+
+
+
 //  for (int k = 0; k < 6; k++) {
 //   msg1.points[0].positions[k] =jointvalues[k]; //array [i]
 //                              }
@@ -575,7 +852,7 @@ void MainWindow::updateOutput(std::string &info)
 {
   output=QString::fromLocal8Bit(info.c_str());
   //ui->outputText->setPlainText(output+tr("\n")+error);
-  ui->outputText->setPlainText(ui->outputText->toPlainText()+tr("Ejecutando Movimientos ")+output+tr("... \n"));//+tr("\n"));
+  ui->outputText->setPlainText(ui->outputText->toPlainText()+output+tr("... \n"));//+tr("\n"));
 }
 void MainWindow::updateError(){
   error=QString("Valores Fuera del espacio de trabajo \n Regresando Robot a su estado Inicial");

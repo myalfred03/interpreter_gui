@@ -18,35 +18,285 @@
     <normaloff>:/img/UNI-Script.png</normaloff>:/img/UNI-Script.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="CodeEditor" name="editor">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>610</width>
-      <height>700</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Serif</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Plain</enum>
-    </property>
-   </widget>
-   <widget class="Console" name="outputText">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>500</y>
-      <width>611</width>
-      <height>81</height>
-     </rect>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="CodeEditor" name="editor">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>10</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>800</width>
+          <height>800</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Serif</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+       </widget>
+       <widget class="QWidget" name="gridLayoutWidget">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="4" column="0" colspan="3">
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="label_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>10</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>D</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>10</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>I</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>10</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>P</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Send Value PID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="text">
+            <string>Clear Graph</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="3">
+          <widget class="QLabel" name="label_4">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>X/Y</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0" colspan="3">
+          <widget class="QCustomPlot" name="graph_canvas" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="cursor">
+            <cursorShape>CrossCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="3">
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="3">
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>Show Joint 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show Joint 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show Joint 3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show Joint 4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show Joint 5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show Joint 6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Show All Joints</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="Line" name="line_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+        <zorder>doubleSpinBox_3</zorder>
+        <zorder>doubleSpinBox_2</zorder>
+        <zorder>label_3</zorder>
+        <zorder>label_2</zorder>
+        <zorder>pushButton</zorder>
+        <zorder>pushButton_2</zorder>
+        <zorder>graph_canvas</zorder>
+        <zorder>label_4</zorder>
+        <zorder>doubleSpinBox</zorder>
+        <zorder>label</zorder>
+        <zorder>comboBox</zorder>
+        <zorder>line</zorder>
+        <zorder>line_2</zorder>
+        <zorder>line_3</zorder>
+        <zorder>line_4</zorder>
+       </widget>
+      </widget>
+      <widget class="Console" name="outputText">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -54,7 +304,7 @@
      <x>0</x>
      <y>0</y>
      <width>620</width>
-     <height>18</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -69,7 +319,7 @@
     <property name="title">
      <string>Editar</string>
     </property>
-    <addaction name="actionSelectAll"/>
+    <addaction name="actionInfoR"/>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
@@ -116,11 +366,11 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave_File"/>
    <addaction name="separator"/>
-   <addaction name="actionSelectAll"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="actionRun"/>
    <addaction name="actionSetting"/>
+   <addaction name="actionInfoR"/>
    <addaction name="actionError_Datos"/>
   </widget>
   <action name="actionNewFile">
@@ -161,16 +411,16 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionSelectAll">
+  <action name="actionInfoR">
    <property name="icon">
     <iconset resource="../image.qrc">
-     <normaloff>:/img/format.png</normaloff>:/img/format.png</iconset>
+     <normaloff>:/img/icon_info.png</normaloff>:/img/icon_info.png</iconset>
    </property>
    <property name="text">
-    <string>Seleccionar</string>
+    <string>Info</string>
    </property>
    <property name="toolTip">
-    <string>Seleccionar Todo</string>
+    <string>Información del Robot Cargado a ROS</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -202,7 +452,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="../image.qrc">
+    <iconset>
      <normaloff>:/img/learning.png</normaloff>:/img/learning.png</iconset>
    </property>
    <property name="text">
@@ -288,12 +538,18 @@
   <customwidget>
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
-   <header location="global">codeeditor.h</header>
+   <header>codeeditor.h</header>
   </customwidget>
   <customwidget>
    <class>Console</class>
    <extends>QPlainTextEdit</extends>
-   <header location="global">console.h</header>
+   <header>console.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

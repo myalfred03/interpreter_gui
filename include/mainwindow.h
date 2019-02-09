@@ -17,6 +17,7 @@
 #include <trajectory_msgs/JointTrajectory.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <boost/bind.hpp>
+#include <std_msgs/String.h>
 //#include <moveit/robot_trajectory/robot_trajectory.h>
 
 namespace Ui {
@@ -37,6 +38,15 @@ public:
   ros::NodeHandle nh_;
   std_msgs::Float32MultiArray limit ;
   void runloop();
+
+  void initializeGraph();
+  double x_org;
+  ros::Time startTime;
+  double joint_1_plot, joint_2_plot, joint_3_plot, joint_4_plot, joint_5_plot, joint_6_plot;
+  QTimer *timer;
+
+
+
 
 //  void publishJointStates();
 
@@ -91,6 +101,11 @@ private:
 //  std::ifstream file("~/Documents/Untitled.rrun");
   //------------------------------------------------
 public slots:
+
+  void mouseMoved(QMouseEvent * event);
+  void updateGraph();
+  void mouseWheel();
+  void removeAllGraphs();
   void changeSaveState(){
     //qDebug()<<"changed";
     if(firstLoad&&fileSaved){
@@ -111,10 +126,19 @@ public slots:
 
   //------------------------------
   void runFinished(int code);
-  void updateOutput(std::string &info);
   void updateError();
   void updateRobot();
   void about();
+  void updateOutput(std::string &info);
+
+public Q_SLOTS:
+  void updatevalues();
+  void on_comboBox_currentIndexChanged(int index);
+
+
+Q_SIGNALS:
+  void setvaluesSubs();
+
 public:
   void inputData(QString data);
 protected:
