@@ -10,8 +10,10 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Script_robot", ros::init_options::AnonymousName);
   }
   QApplication a(argc, argv);
-  MainWindow w;
-  w.show();
+  MainWindow *w = new MainWindow;
+
+  w->show();
 
   return a.exec();
+      delete w;
 }

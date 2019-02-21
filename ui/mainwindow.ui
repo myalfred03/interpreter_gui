@@ -74,6 +74,18 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-50.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>50.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
           </widget>
          </item>
          <item row="3" column="1">
@@ -83,6 +95,18 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-50.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>50.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -115,6 +139,18 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-50.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>50.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -226,6 +262,11 @@
           <widget class="QComboBox" name="comboBox">
            <item>
             <property name="text">
+             <string>Show All Joints</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>Show Joint 1</string>
             </property>
            </item>
@@ -252,11 +293,6 @@
            <item>
             <property name="text">
              <string>Show Joint 6</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Show All Joints</string>
             </property>
            </item>
           </widget>

@@ -197,6 +197,10 @@ public:
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(doubleSpinBox_3->sizePolicy().hasHeightForWidth());
         doubleSpinBox_3->setSizePolicy(sizePolicy1);
+        doubleSpinBox_3->setDecimals(3);
+        doubleSpinBox_3->setMinimum(-50);
+        doubleSpinBox_3->setMaximum(50);
+        doubleSpinBox_3->setSingleStep(0.1);
 
         gridLayout->addWidget(doubleSpinBox_3, 3, 2, 1, 1);
 
@@ -204,6 +208,10 @@ public:
         doubleSpinBox_2->setObjectName(QStringLiteral("doubleSpinBox_2"));
         sizePolicy1.setHeightForWidth(doubleSpinBox_2->sizePolicy().hasHeightForWidth());
         doubleSpinBox_2->setSizePolicy(sizePolicy1);
+        doubleSpinBox_2->setDecimals(3);
+        doubleSpinBox_2->setMinimum(-50);
+        doubleSpinBox_2->setMaximum(50);
+        doubleSpinBox_2->setSingleStep(0.1);
 
         gridLayout->addWidget(doubleSpinBox_2, 3, 1, 1, 1);
 
@@ -223,6 +231,10 @@ public:
         doubleSpinBox->setObjectName(QStringLiteral("doubleSpinBox"));
         sizePolicy1.setHeightForWidth(doubleSpinBox->sizePolicy().hasHeightForWidth());
         doubleSpinBox->setSizePolicy(sizePolicy1);
+        doubleSpinBox->setDecimals(3);
+        doubleSpinBox->setMinimum(-50);
+        doubleSpinBox->setMaximum(50);
+        doubleSpinBox->setSingleStep(0.1);
 
         gridLayout->addWidget(doubleSpinBox, 3, 0, 1, 1);
 
@@ -443,13 +455,13 @@ public:
         label_4->setText(QApplication::translate("MainWindow", "X/Y", Q_NULLPTR));
         comboBox->clear();
         comboBox->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "Show All Joints", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 1", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 2", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 3", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 4", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 5", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Show Joint 6", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Show All Joints", Q_NULLPTR)
         );
         menu->setTitle(QApplication::translate("MainWindow", "Archivo", Q_NULLPTR));
         menuEdit_O->setTitle(QApplication::translate("MainWindow", "Editar", Q_NULLPTR));

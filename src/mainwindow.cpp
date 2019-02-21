@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <ros/package.h>
+double ToG    = 57.295779513;
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
@@ -45,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->actionRun,      SIGNAL(triggered(bool)),            this, SLOT(run()));
   connect(ui->actionAbout,    SIGNAL(triggered(bool)),            this, SLOT(about()));
 
+  connect(ui->pushButton,     SIGNAL(clicked()),                  this, SLOT(pid_value()));
+  
+
   fileSaved=true;
 //  msg1.points.resize(1);
 //  msg1.points[0].positions.resize(6);
@@ -72,8 +77,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   msgolder.points.resize(1);
   msgolder.points[0].positions.resize(6);
+
    joint_pub =       nh_.advertise<trajectory_msgs::JointTrajectory>("set_joint_trajectory", 10);
    joint_sub_limit = nh_.subscribe("/joint_limits",10,&MainWindow::jointsizeCallback, this);
+   pid_value_pub   = nh_.advertise<std_msgs::Float32MultiArray>("pid_value", 10);
+   joint_sub_gazebo= nh_.subscribe("/gazebo_client/joint_values_gazebo",10,&MainWindow::joint_Gz_Callback, this);
+
+
 
    spinner = boost::shared_ptr<ros::AsyncSpinner>(new ros::AsyncSpinner(1));
    spinner->start();
@@ -234,7 +244,18 @@ void MainWindow::mouseWheel()
 void MainWindow::on_comboBox_currentIndexChanged(int index=0)
 {
   switch (index){
+
    case 0:
+ {
+    ui->graph_canvas->graph(0)->setVisible(true);
+    ui->graph_canvas->graph(1)->setVisible(true);
+    ui->graph_canvas->graph(2)->setVisible(true);
+    ui->graph_canvas->graph(3)->setVisible(true);
+    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(5)->setVisible(true);
+   break;
+ }
+   case 1:
   {
     ui->graph_canvas->graph(0)->setVisible(true);
     ui->graph_canvas->graph(1)->setVisible(false);
@@ -245,22 +266,11 @@ void MainWindow::on_comboBox_currentIndexChanged(int index=0)
 
    break;
   }
-   case 1:
+   case 2:
  {
     ui->graph_canvas->graph(0)->setVisible(false);
     ui->graph_canvas->graph(1)->setVisible(true);
     ui->graph_canvas->graph(2)->setVisible(false);
-    ui->graph_canvas->graph(3)->setVisible(false);
-    ui->graph_canvas->graph(4)->setVisible(false);
-    ui->graph_canvas->graph(5)->setVisible(false);
-   break;
- }
-
-    case 2:
- {
-    ui->graph_canvas->graph(0)->setVisible(false);
-    ui->graph_canvas->graph(1)->setVisible(false);
-    ui->graph_canvas->graph(2)->setVisible(true);
     ui->graph_canvas->graph(3)->setVisible(false);
     ui->graph_canvas->graph(4)->setVisible(false);
     ui->graph_canvas->graph(5)->setVisible(false);
@@ -271,19 +281,20 @@ void MainWindow::on_comboBox_currentIndexChanged(int index=0)
  {
     ui->graph_canvas->graph(0)->setVisible(false);
     ui->graph_canvas->graph(1)->setVisible(false);
-    ui->graph_canvas->graph(2)->setVisible(false);
-    ui->graph_canvas->graph(3)->setVisible(true);
+    ui->graph_canvas->graph(2)->setVisible(true);
+    ui->graph_canvas->graph(3)->setVisible(false);
     ui->graph_canvas->graph(4)->setVisible(false);
     ui->graph_canvas->graph(5)->setVisible(false);
    break;
  }
+
     case 4:
  {
     ui->graph_canvas->graph(0)->setVisible(false);
     ui->graph_canvas->graph(1)->setVisible(false);
     ui->graph_canvas->graph(2)->setVisible(false);
-    ui->graph_canvas->graph(3)->setVisible(false);
-    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(3)->setVisible(true);
+    ui->graph_canvas->graph(4)->setVisible(false);
     ui->graph_canvas->graph(5)->setVisible(false);
    break;
  }
@@ -293,23 +304,34 @@ void MainWindow::on_comboBox_currentIndexChanged(int index=0)
     ui->graph_canvas->graph(1)->setVisible(false);
     ui->graph_canvas->graph(2)->setVisible(false);
     ui->graph_canvas->graph(3)->setVisible(false);
-    ui->graph_canvas->graph(4)->setVisible(false);
-    ui->graph_canvas->graph(5)->setVisible(true);
+    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(5)->setVisible(false);
    break;
  }
     case 6:
  {
-    ui->graph_canvas->graph(0)->setVisible(true);
-    ui->graph_canvas->graph(1)->setVisible(true);
-    ui->graph_canvas->graph(2)->setVisible(true);
-    ui->graph_canvas->graph(3)->setVisible(true);
-    ui->graph_canvas->graph(4)->setVisible(true);
+    ui->graph_canvas->graph(0)->setVisible(false);
+    ui->graph_canvas->graph(1)->setVisible(false);
+    ui->graph_canvas->graph(2)->setVisible(false);
+    ui->graph_canvas->graph(3)->setVisible(false);
+    ui->graph_canvas->graph(4)->setVisible(false);
     ui->graph_canvas->graph(5)->setVisible(true);
    break;
  }
+
   }
 }
 
+void MainWindow::pid_value(){
+  std_msgs::Float32MultiArray send_val;
+  send_val.data.resize(3);
+
+  send_val.data[0] = ui->doubleSpinBox->   value();
+  send_val.data[1] = ui->doubleSpinBox_2-> value();
+  send_val.data[2] = ui->doubleSpinBox_3-> value();
+  pid_value_pub.publish(send_val);
+
+}
 
 void MainWindow::setUpHighlighter(){
   QFont font;
@@ -480,6 +502,28 @@ void MainWindow::jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &
     limit = *msglimit;
 
     Q_EMIT setvaluesSubs();
+
+
+}
+
+void MainWindow::joint_Gz_Callback(const trajectory_msgs::JointTrajectory &msg) //Valores de los limtes de los joints
+{
+  std::cout<<"gazebo joints"<< std::endl;
+
+    joint_1_plot = msg.points[0].positions[0]*ToG;
+    joint_2_plot = msg.points[0].positions[1]*ToG;
+    joint_3_plot = msg.points[0].positions[2]*ToG;
+    joint_4_plot = msg.points[0].positions[3]*ToG;
+    joint_5_plot = msg.points[0].positions[4]*ToG;
+    joint_6_plot = msg.points[0].positions[5]*ToG;
+  std::cout<<joint_1_plot<<"\n"<<joint_2_plot<<std::endl;
+
+     // joint_positions_["joint_1"]= msg.points[0].positions[0]/ToG;
+     // joint_positions_["joint_2"]= msg.points[0].positions[1]/ToG;
+     // joint_positions_["joint_3"]= msg.points[0].positions[2]/ToG;
+     // joint_positions_["joint_4"]= msg.points[0].positions[3]/ToG;
+     // joint_positions_["joint_5"]= msg.points[0].positions[4]/ToG;
+     // joint_positions_["joint_6"]= msg.points[0].positions[5]/ToG;
 
 
 }

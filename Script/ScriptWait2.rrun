@@ -6,4 +6,3 @@ MoveJ_5 G 40 V 80
 MoveJ_6 G 20 V 80
 wait() 7000
 MoveJ_6 G -20 V 81
-loop()

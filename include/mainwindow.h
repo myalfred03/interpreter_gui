@@ -32,8 +32,9 @@ public:
   MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
-  ros::Publisher joint_pub;
+  ros::Publisher joint_pub,pid_value_pub;
   ros::Subscriber joint_sub_limit;
+  ros::Subscriber joint_sub_gazebo;
 
   ros::NodeHandle nh_;
   std_msgs::Float32MultiArray limit ;
@@ -117,6 +118,7 @@ public slots:
     this->setWindowTitle(tr("Robot Editor Script - ")+fileName+tr("*"));
   }
   void jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &msglimit);
+  void joint_Gz_Callback(const trajectory_msgs::JointTrajectory &msg);
   void newFile();
   void saveFile();
   void openFile();
@@ -134,6 +136,7 @@ public slots:
 public Q_SLOTS:
   void updatevalues();
   void on_comboBox_currentIndexChanged(int index);
+  void pid_value();
 
 
 Q_SIGNALS:
