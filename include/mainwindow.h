@@ -34,7 +34,7 @@ public:
 
   ros::Publisher joint_pub,pid_value_pub;
   ros::Subscriber joint_sub_limit;
-  ros::Subscriber joint_sub_gazebo;
+  ros::Subscriber joint_sub_gazebo, joint_sub;
 
   ros::NodeHandle nh_;
   std_msgs::Float32MultiArray limit ;
@@ -117,6 +117,7 @@ public slots:
     fileSaved=false;
     this->setWindowTitle(tr("Robot Editor Script - ")+fileName+tr("*"));
   }
+  void trajectoryCallback(const trajectory_msgs::JointTrajectory & msg); // MoveIt
   void jointsizeCallback(const std_msgs::Float32MultiArray::ConstPtr &msglimit);
   void joint_Gz_Callback(const trajectory_msgs::JointTrajectory &msg);
   void newFile();

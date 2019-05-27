@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
    joint_sub_limit = nh_.subscribe("/joint_limits",10,&MainWindow::jointsizeCallback, this);
    pid_value_pub   = nh_.advertise<std_msgs::Float32MultiArray>("pid_value", 10);
    joint_sub_gazebo= nh_.subscribe("/gazebo_client/joint_values_gazebo",10,&MainWindow::joint_Gz_Callback, this);
+   joint_sub            = nh_.subscribe("/set_joint_trajectory_delay",10,&MainWindow::trajectoryCallback,this);
 
 
 
@@ -527,6 +528,20 @@ void MainWindow::joint_Gz_Callback(const trajectory_msgs::JointTrajectory &msg) 
 
 
 }
+
+
+void MainWindow::trajectoryCallback(const trajectory_msgs::JointTrajectory &msg)
+{
+    joint_1_plot = msg.points[0].positions[0];
+    joint_2_plot = msg.points[0].positions[1];
+    joint_3_plot = msg.points[0].positions[2];
+    joint_4_plot = msg.points[0].positions[3];
+    joint_5_plot = msg.points[0].positions[4];
+    joint_6_plot = msg.points[0].positions[5];
+
+
+
+  }
 
 void MainWindow::updatevalues(){
   std::cout<<"Signal is OK"<< std::endl;

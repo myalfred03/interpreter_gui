@@ -1,0 +1,3 @@
+MoveJ_1 G -40 W 80
+MoveJ_6 G 23 W 45
+wait()
